@@ -1,0 +1,14 @@
+{
+    "name": "JIRA Extensions",
+    "description": "Useful extensions for working with JIRA",
+    "version": "0.1",
+    "manifest_version": 2,
+
+    "content_scripts": [
+        {
+            "matches": ["https://jira.vendavo.com/*"],
+            "css": [],
+            "js": ["jquery-1.8.2.min.js", "JIRASimpleGitHistory.js"]
+        }
+    ]
+}
