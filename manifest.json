@@ -1,7 +1,7 @@
 {
     "name": "JIRA Extensions",
     "description": "Useful extensions for working with JIRA",
-    "version": "0.1",
+    "version": "0.1.1",
     "manifest_version": 2,
 
     "content_scripts": [
