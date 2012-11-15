@@ -5,6 +5,13 @@ var simpleGitHistory = function($) {
         this.collapsed = false;
     }
 
+    CommitsDisplayModule.prototype.toggle = function() {
+        if(this.collapsed)
+            this.expand();
+        else
+            this.collapse();
+    }
+
     CommitsDisplayModule.prototype.collapse = function() {
         if(this.collapsed) return;
         var current = { commit:null };
@@ -46,8 +53,13 @@ var simpleGitHistory = function($) {
         var $toolbar = $('<div></div>')
             .prependTo($container)
             .css('margin-bottom', '5px');
-        addToolbarButton($toolbar, 'expand commits', function () { squeezer.expand(); });
-        addToolbarButton($toolbar, 'collapse commits', function () { squeezer.collapse(); });
+        addToolbarButton($toolbar, 'expand commits', function (event) {
+            squeezer.toggle();
+            if(squeezer.collapsed)
+                $(event.target).attr('value', 'expand commits');
+            else
+                $(event.target).attr('value', 'collapse commits');
+        });
     };
 
     function addToolbarButton($toolbar, label, clickFunction) {
