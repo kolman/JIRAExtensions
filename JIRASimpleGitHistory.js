@@ -35,39 +35,29 @@ var simpleGitHistory = function($) {
 
     function filterBranches() {
         var filter = $branchFilter.val();
-        if(collapsed) {
-            $('.jira-ext-branch-name').each(function(){
-                if($(this).text().match(filter))
-                    $(this).show();
-                else
-                    $(this).hide();
-            });
-        } else {
-            $container.find('table').each(function() {
-                var branchName = $(this).find('.jira-ext-branch-name:first').text();
-                if(branchName.match(filter)) {
-                    console.log('branch "' + branchName + '" matches "' + filter + '"');
-                    $(this).show();
+        $('.jira-ext-branch-name').each(function(){
+                if($(this).text().match(filter)) {
+                    $(this).removeClass('jira-ext-filtered-out');
                 } else {
-                    console.log('branch "' + branchName + '" does not match "' + filter + '"');
-                    $(this).hide();
+                    $(this).addClass('jira-ext-filtered-out');
                 }
             });
-        }
+        $container.find('table')
+            .addClass('jira-ext-filtered-out')
+            .filter(':has(.jira-ext-branch-name:not(.jira-ext-filtered-out):not(.jira-ext-collapsed))')
+            .removeClass('jira-ext-filtered-out');
     }
 
     function collapse() {
-        $container.find('table').show();
-        $('.jira-ext-redundant-table').hide();
-        $('.jira-ext-branch-name').show();
+        $('.jira-ext-redundant-table').addClass('jira-ext-collapsed');
+        $('.jira-ext-other-branch-name').removeClass('jira-ext-collapsed');
         collapsed = true;
         filterBranches();
     }
 
     function expand() {
-        $container.find('table').show();
-        $('.jira-ext-branch-name').show();
-        $('.jira-ext-other-branch-name').hide();
+        $('.jira-ext-redundant-table').removeClass('jira-ext-collapsed');
+        $('.jira-ext-other-branch-name').addClass('jira-ext-collapsed');
         collapsed = false;
         filterBranches();
     }
@@ -105,6 +95,7 @@ var simpleGitHistory = function($) {
             '.issuePanelContainer table { margin-bottom: 1.5em } ' +
             '#jira-ext-toolbar { margin-bottom: 5px; }' +
             '#jira-ext-toolbar input { margin-right: 5px; }' +
+            '.jira-ext-filtered-out,.jira-ext-collapsed { display: none; }' +
           '</style>').appendTo('head');
     }
 
