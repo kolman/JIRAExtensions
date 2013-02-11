@@ -92,7 +92,6 @@ var simpleGitHistory = function($) {
             '.issuePanelContainer table { margin-bottom: 1.5em } ' +
             '#jira-ext-toolbar { margin-bottom: 5px; }' +
             '#jira-ext-toolbar input { margin-right: 5px; }' +
-            '.jira-ext-redundant-table { display: none; }' +
           '</style>').appendTo('head');
     }
 
