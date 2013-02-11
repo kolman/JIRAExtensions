@@ -3,6 +3,7 @@ var simpleGitHistory = function($) {
     var collapsed = false;
     var $container;
     var $branchFilter;
+    var $hiddenCommits;
 
     function findCommits() {
         var commits = $container.find('table').map(function () {
@@ -46,6 +47,11 @@ var simpleGitHistory = function($) {
             .addClass('jira-ext-filtered-out')
             .filter(':has(.jira-ext-branch-name:not(.jira-ext-filtered-out):not(.jira-ext-collapsed))')
             .removeClass('jira-ext-filtered-out');
+        var hiddenCommitsCount = $container.find('table.jira-ext-filtered-out:not(.jira-ext-collapsed)').length;
+        if(hiddenCommitsCount==0)
+            $hiddenCommits.html('');
+        else
+            $hiddenCommits.text(hiddenCommitsCount + ' commit(s) are hidden by this filter');
     }
 
     function collapse() {
@@ -81,6 +87,8 @@ var simpleGitHistory = function($) {
         $branchFilter = $('<input type="text" value="^rel" />');
         $toolbar.append('Show only branches: ').append($branchFilter);
         $branchFilter.keyup(filterBranches);
+
+        $hiddenCommits = $('<span class="jira-ext-hidden-commits"></span>').appendTo($toolbar);
     }
 
     function createToolbar() {
@@ -99,6 +107,7 @@ var simpleGitHistory = function($) {
             '#jira-ext-toolbar input { margin-right: 1.7em; }' +
             '.jira-ext-filtered-out,.jira-ext-collapsed { display: none; }' +
             '.jira-ext-branch-name { white-space:nowrap; } ' +
+            '.jira-ext-hidden-commits { font-weight: bold; }' +
           '</style>').appendTo('head');
     }
 
