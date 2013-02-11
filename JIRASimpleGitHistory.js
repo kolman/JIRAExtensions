@@ -1,39 +1,6 @@
 var simpleGitHistory = function($) {
 
-    function CommitsDisplayModule(commits) {
-        this.commits = commits;
-        this.collapsed = false;
-    }
-
-    CommitsDisplayModule.prototype.toggle = function() {
-        if(this.collapsed)
-            this.expand();
-        else
-            this.collapse();
-    }
-
-    CommitsDisplayModule.prototype.collapse = function() {
-        if(this.collapsed) return;
-        var current = { commit:null };
-        $.each(this.commits, function () {
-            if (current.commit == this.commit) {
-                current.$branchCell.append("<br/>" + this.branchName);
-                this.$table.hide();
-            } else {
-                current = this;
-            }
-        });
-        this.collapsed = true;
-    };
-
-    CommitsDisplayModule.prototype.expand = function() {
-        if(!this.collapsed) return;
-        $.each(this.commits, function () {
-            this.$table.show();
-            this.$branchCell.text(this.branchName);
-        });
-        this.collapsed = false;
-    };
+    var collapsed = false;
 
     function findCommits($container) {
         var commits = $container.find('table').map(function () {
@@ -49,44 +16,71 @@ var simpleGitHistory = function($) {
         return commits;
     }
 
-    function createToolbar($container, squeezer) {
-        var $toolbar = $('<div></div>')
-            .prependTo($container)
-            .css('margin-bottom', '5px');
+    function augmentCommitTables(commits) {
+        var current = { commit: null };
+        $.each(commits, function() {
+            this.$table.next('br').remove();
+            if (current.commit == this.commit) {
+                current.$branchCell.append('<div class="jira-ext-branch-name jira-ext-other-branch-name">' + this.branchName + '</div>');
+                this.$table.addClass('jira-ext-redundant-table');
+            } else {
+                current = this;
+                this.$branchCell.html('<div class="jira-ext-branch-name">' + this.branchName + '</div>');
+            }
+        });
+    }
+
+    function collapse() {
+        $('.jira-ext-redundant-table').hide();
+        $('.jira-ext-other-branch-name').show();
+        collapsed = true;
+    }
+
+    function expand() {
+        $('.jira-ext-redundant-table').show();
+        $('.jira-ext-other-branch-name').hide();
+        collapsed = false;
+    }
+
+    function createToolbar($container) {
+        var $toolbar = $('<div id="jira-ext-toolbar"></div>')
+            .prependTo($container);
         addToolbarButton($toolbar, 'expand commits', function (event) {
-            squeezer.toggle();
-            if(squeezer.collapsed)
-                $(event.target).attr('value', 'expand commits');
-            else
+            if (collapsed) {
+                expand();
                 $(event.target).attr('value', 'collapse commits');
+            } else {
+                collapse();
+                $(event.target).attr('value', 'expand commits');
+            }
         });
     };
 
     function addToolbarButton($toolbar, label, clickFunction) {
         var $button = $('<input type="button" />')
-            .attr('value', label)
-            .css('margin-right', '5px');
+            .attr('value', label);
         $toolbar.append($button);
         $button.click(clickFunction);
     }
 
-    function fixTableLayout($container) {
-        $container.find('table').each(function () {
-            var t = $(this);
-            t.css('margin-bottom', '2em');
-            t.next().remove();
-        });
+    function createCssStyles() {
+        $('<style type="text/css">' +
+            '.issuePanelContainer table { margin-bottom: 1.5em } ' +
+            '#jira-ext-toolbar { margin-bottom: 5px; }' +
+            '#jira-ext-toolbar input { margin-right: 5px; }' +
+            '.jira-ext-redundant-table { display: none; }' +
+          '</style>').appendTo('head');
     }
 
     if ($('#git-commits-tabpanel').hasClass('active')) {
+        createCssStyles();
         var $container = $('.issuePanelContainer');
-        fixTableLayout($container);
         var commits = findCommits($container);
+        augmentCommitTables(commits);
 
-        var squeezer = new CommitsDisplayModule(commits);
-        squeezer.collapse();
+        collapse();
 
-        createToolbar($container, squeezer);
+        createToolbar($container);
     }
 
 };
