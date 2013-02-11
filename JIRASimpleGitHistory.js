@@ -1,6 +1,7 @@
 var simpleGitHistory = function($) {
 
     var collapsed = false;
+    var $branchFilter;
 
     function findCommits($container) {
         var commits = $container.find('table').map(function () {
@@ -30,22 +31,39 @@ var simpleGitHistory = function($) {
         });
     }
 
+    function filterBranches() {
+        var filter = $branchFilter.val();
+        if(collapsed) {
+            $('.jira-ext-branch-name').each(function(){
+                if($(this).text().match(filter))
+                    $(this).show();
+                else
+                    $(this).hide();
+            });
+        } else {
+        }
+    }
+
     function collapse() {
         $('.jira-ext-redundant-table').hide();
-        $('.jira-ext-other-branch-name').show();
+        $('.jira-ext-branch-name').show();
         collapsed = true;
+        filterBranches();
     }
 
     function expand() {
         $('.jira-ext-redundant-table').show();
+        $('.jira-ext-branch-name').show();
         $('.jira-ext-other-branch-name').hide();
         collapsed = false;
+        filterBranches();
     }
 
-    function createToolbar($container) {
-        var $toolbar = $('<div id="jira-ext-toolbar"></div>')
-            .prependTo($container);
-        addToolbarButton($toolbar, 'expand commits', function (event) {
+    function createToggleButton($toolbar) {
+        var $button = $('<input type="button" />')
+            .attr('value', 'expand commits');
+        $toolbar.append($button);
+        $button.click(function (event) {
             if (collapsed) {
                 expand();
                 $(event.target).attr('value', 'collapse commits');
@@ -54,14 +72,20 @@ var simpleGitHistory = function($) {
                 $(event.target).attr('value', 'expand commits');
             }
         });
-    };
-
-    function addToolbarButton($toolbar, label, clickFunction) {
-        var $button = $('<input type="button" />')
-            .attr('value', label);
-        $toolbar.append($button);
-        $button.click(clickFunction);
     }
+
+    function createBranchFilter($toolbar) {
+        $branchFilter = $('<input type="text" value="^rel" />');
+        $toolbar.append('Show only branches: ').append($branchFilter);
+        $branchFilter.keyup(filterBranches);
+    }
+
+    function createToolbar($container) {
+        var $toolbar = $('<div id="jira-ext-toolbar"></div>')
+            .prependTo($container);
+        createToggleButton($toolbar);
+        createBranchFilter($toolbar);
+    };
 
     function createCssStyles() {
         $('<style type="text/css">' +
@@ -77,10 +101,9 @@ var simpleGitHistory = function($) {
         var $container = $('.issuePanelContainer');
         var commits = findCommits($container);
         augmentCommitTables(commits);
+        createToolbar($container);
 
         collapse();
-
-        createToolbar($container);
     }
 
 };
