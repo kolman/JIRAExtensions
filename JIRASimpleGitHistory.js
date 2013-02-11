@@ -70,8 +70,17 @@ var simpleGitHistory = function($) {
         $button.click(clickFunction);
     }
 
+    function fixTableLayout($container) {
+        $container.find('table').each(function () {
+            var t = $(this);
+            t.css('margin-bottom', '2em');
+            t.next().remove();
+        });
+    }
+
     if ($('#git-commits-tabpanel').hasClass('active')) {
         var $container = $('.issuePanelContainer');
+        fixTableLayout($container);
         var commits = findCommits($container);
 
         var squeezer = new CommitsDisplayModule(commits);
