@@ -2,7 +2,7 @@
 // @name        JIRA Extensions
 // @description Useful extensions for working with JIRA
 // @namespace   http://www.kolman.cz/greasemonkey
-// @version     0.1.1
+// @version     0.1.2
 //
 // @include     https://jira/*
 // @include     http://jira/*
