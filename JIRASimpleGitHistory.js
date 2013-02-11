@@ -93,9 +93,12 @@ var simpleGitHistory = function($) {
     function createCssStyles() {
         $('<style type="text/css">' +
             '.issuePanelContainer table { margin-bottom: 1.5em } ' +
-            '#jira-ext-toolbar { margin-bottom: 5px; }' +
-            '#jira-ext-toolbar input { margin-right: 5px; }' +
+            '#jira-ext-toolbar { margin-bottom: 0.7em; padding: 0.7em; border-radius: 5px; ' +
+            'background: -webkit-linear-gradient(top, #ffff88 0%,#fcdc3a 100%); ' +
+            '}' +
+            '#jira-ext-toolbar input { margin-right: 1.7em; }' +
             '.jira-ext-filtered-out,.jira-ext-collapsed { display: none; }' +
+            '.jira-ext-branch-name { white-space:nowrap; } ' +
           '</style>').appendTo('head');
     }
 
