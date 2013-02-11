@@ -1,9 +1,10 @@
 var simpleGitHistory = function($) {
 
     var collapsed = false;
+    var $container;
     var $branchFilter;
 
-    function findCommits($container) {
+    function findCommits() {
         var commits = $container.find('table').map(function () {
             var t = $(this);
             var branchCell = t.find('tr:eq(1) td:eq(1)');
@@ -23,6 +24,7 @@ var simpleGitHistory = function($) {
             this.$table.next('br').remove();
             if (current.commit == this.commit) {
                 current.$branchCell.append('<div class="jira-ext-branch-name jira-ext-other-branch-name">' + this.branchName + '</div>');
+                this.$branchCell.html('<div class="jira-ext-branch-name">' + this.branchName + '</div>');
                 this.$table.addClass('jira-ext-redundant-table');
             } else {
                 current = this;
@@ -41,10 +43,21 @@ var simpleGitHistory = function($) {
                     $(this).hide();
             });
         } else {
+            $container.find('table').each(function() {
+                var branchName = $(this).find('.jira-ext-branch-name:first').text();
+                if(branchName.match(filter)) {
+                    console.log('branch "' + branchName + '" matches "' + filter + '"');
+                    $(this).show();
+                } else {
+                    console.log('branch "' + branchName + '" does not match "' + filter + '"');
+                    $(this).hide();
+                }
+            });
         }
     }
 
     function collapse() {
+        $container.find('table').show();
         $('.jira-ext-redundant-table').hide();
         $('.jira-ext-branch-name').show();
         collapsed = true;
@@ -52,7 +65,7 @@ var simpleGitHistory = function($) {
     }
 
     function expand() {
-        $('.jira-ext-redundant-table').show();
+        $container.find('table').show();
         $('.jira-ext-branch-name').show();
         $('.jira-ext-other-branch-name').hide();
         collapsed = false;
@@ -80,7 +93,7 @@ var simpleGitHistory = function($) {
         $branchFilter.keyup(filterBranches);
     }
 
-    function createToolbar($container) {
+    function createToolbar() {
         var $toolbar = $('<div id="jira-ext-toolbar"></div>')
             .prependTo($container);
         createToggleButton($toolbar);
@@ -97,10 +110,10 @@ var simpleGitHistory = function($) {
 
     if ($('#git-commits-tabpanel').hasClass('active')) {
         createCssStyles();
-        var $container = $('.issuePanelContainer');
-        var commits = findCommits($container);
+        $container = $('.issuePanelContainer');
+        var commits = findCommits();
         augmentCommitTables(commits);
-        createToolbar($container);
+        createToolbar();
 
         collapse();
     }
